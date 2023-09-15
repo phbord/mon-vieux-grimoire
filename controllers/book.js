@@ -5,29 +5,25 @@ require('dotenv').config();
 const Book = require('../models/book');
 
 // CREATION d'un livre
-exports.createBook = (req, res, next) => {
-  const bookObject = JSON.parse(req.body.book);
-  delete bookObject._id;
-  delete bookObject._userId;
-  
-  const book = new Book({
-    ...bookObject,
-    userId: req.auth.userId,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-  });
-  book.save().then(
-    () => {
-      res.status(201).json({
-        message: 'Post saved successfully!'
-      });
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+exports.createBook = async (req, res, next) => {
+  try {
+    const bookObject = await JSON.parse(req.body.book);
+    delete await bookObject._id;
+    delete await bookObject._userId;
+
+    const book = await new Book({
+      ...bookObject,
+      userId: req.auth.userId,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    });
+    await book.save();
+    await res.status(201).json({
+      message: 'Post saved successfully!'
+    });
+  }
+  catch (error) {
+    await res.status(400).json({ error });
+  }
 };
 
 // AJOUT d'une note
@@ -144,8 +140,8 @@ exports.getBestRatingBooks = async (req, res, next) => {
       booksFiltered.push(bookFiltered)
       books.splice(index, 1);
     }
-    //console.log('getBestRatingBooks => booksFiltered:', booksFiltered);
-    await res.status(200).json(books);
+    console.log('getBestRatingBooks => booksFiltered:', booksFiltered);
+    await res.status(200).json(booksFiltered);
   }
   catch (error) {
     await res.status(400).json({ error });
