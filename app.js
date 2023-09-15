@@ -1,10 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+
+const utilsConnect = require('./utils/connect');
 const bookRoutes = require('./routes/book');
 const userRoutes = require('./routes/user');
-const utilsConnect = require('./utils/connect');
-require('dotenv').config();
 
 const app = express();
 
