@@ -140,7 +140,6 @@ exports.getBestRatingBooks = async (req, res, next) => {
       booksFiltered.push(bookFiltered)
       books.splice(index, 1);
     }
-    console.log('getBestRatingBooks => booksFiltered:', booksFiltered);
     await res.status(200).json(booksFiltered);
   }
   catch (error) {
