@@ -29,22 +29,37 @@ exports.createBook = async (req, res, next) => {
 // AJOUT d'une note
 exports.newRating = async (req, res, next) => {
   try {
-    // Connexion
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, process.env.MONGODB_TOKEN_KEY);
-    const userId = decodedToken.userId;
+    // 01. CREATION de l'objet "book", depuis son "id"
+    const book = await Book.findOne({ _id: req.params.id });
 
-    /* if (userId === req.body.userId) {
-      return await res.status(401).json({ error });
-    } */
-    
-    console.log('userId:', userId);
-    console.log('id du livre:', req.params.id);
-    console.log('id du user:', req.params.userId);
-    console.log('req.body.userId:', req.body.userId);
+    // 02. COMPARAISON entre les userId de "book.ratings" et du localstorage
+    const isUserIdExist = await book.ratings
+      .some((item) => item.userId === req.auth.userId);
+    if (isUserIdExist) {
+      return await res.status(400).json({ error });
+    }
+
+    // 03. AJOUT d'un nouvel objet dans "book.ratings"
+    await book.ratings.push({
+      userId: req.auth.userId,
+      grade: req.body.rating
+    });
+
+    // 04. MODIFICATION de "book.averageRating"
+    const newAverageRating = await book.ratings.reduce((acc, curr) => acc + curr.grade, 0)/book.ratings.length;
+    book.averageRating = await newAverageRating;
+
+    // 05. MISE A JOUR de "book"
+    try {
+      await Book.updateOne({ _id: req.params.id }, { ...book.toObject() })
+      await res.status(200).json(book);
+    }
+    catch (error) {
+      await res.status(401).json({ error });
+    }
   }
   catch (error) {
-    await res.status(404).json({ error });
+    await res.status(400).json({ error });
   }
 };
 
