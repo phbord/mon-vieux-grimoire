@@ -16,6 +16,7 @@ exports.signup = async (req, res, next) => {
     await res.status(201).json({ message: 'Utilisateur créé !' });
   }
   catch (error) {
+    // Si l'email saisi correspond à celui de la base
     await res.status(400).json({ error });
   }
 };
