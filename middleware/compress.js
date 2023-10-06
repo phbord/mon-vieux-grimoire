@@ -20,7 +20,6 @@ const compressImage = async (req, res, next) => {
     next();
   }
   catch (error) {
-    printError(error);
     res.status(400).json({ error });
   }
   finally {
